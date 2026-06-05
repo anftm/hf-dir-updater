@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 """
 HuggingFace 仓库目录自动更新脚本
-- 遍历 8 个指定仓库
-- ls-remote 获取最新 HEAD hash
-- 浅克隆 → 判断 bot 是否已处理 → 运行 mul.py → diff → 推送
+遍历 8 个指定仓库 → ls-remote 获取 HEAD hash
+→ 浅克隆 → 判断 bot 是否已处理 → 运行 mul.py → diff → 推送
 """
 
 import os
@@ -42,7 +41,7 @@ if not HF_TOKEN:
 
 
 def run_cmd(cmd_list, cwd=None):
-    """运行命令，返回 CompletedProcess。失败时打印错误但不抛异常。"""
+    """运行命令，返回 CompletedProcess"""
     env = os.environ.copy()
     env["GIT_LFS_SKIP_SMUDGE"] = "1"
     try:
@@ -105,7 +104,7 @@ def process_repo(repo_path):
             author, msg = "", ""
 
         if author == BOT_AUTHOR and msg.startswith(AUTO_COMMIT_PREFIX):
-            print(f"  ⏭️  最新 commit 是本 bot 推送的 ("{msg}")，跳过。")
+            print(f'  ⏭️  最新 commit 是本 bot 推送的 ("{msg}")，跳过。')
             return
         print(f"  最新 commit author: {author}, msg: {msg[:60]}")
 
@@ -144,12 +143,11 @@ def process_repo(repo_path):
         commit_msg = f"{AUTO_COMMIT_PREFIX} [{date_str}] [auto-bot]"
 
         run_cmd(["git", "add", "."], cwd=repo_dir)
-        run_cmd(
-            ["git", "-c", "user.name=github-actions[bot]",
-             "-c", "user.email=github-actions[bot]@users.noreply.github.com",
-             "commit", "-m", commit_msg],
-            cwd=repo_dir
-        )
+        run_cmd([
+            "git", "-c", "user.name=github-actions[bot]",
+            "-c", "user.email=github-actions[bot]@users.noreply.github.com",
+            "commit", "-m", commit_msg
+        ], cwd=repo_dir)
         r = run_cmd(["git", "push"], cwd=repo_dir)
         if r.returncode == 0:
             print(f"  🚀 推送成功: {commit_msg}")
