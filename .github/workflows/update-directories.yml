@@ -1,0 +1,25 @@
+name: Update HF Repo Directories
+
+on:
+  schedule:
+    # 每天 UTC 20:00 = 北京时间次日凌晨 4:00
+    - cron: "0 20 * * *"
+  workflow_dispatch:   # 允许手动触发测试
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout this repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run updater
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: python update_dirs.py
