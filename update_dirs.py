@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 HuggingFace 仓库目录自动更新脚本
-遍历 8 个指定仓库 → ls-remote 获取 HEAD hash
+遍历 9 个指定仓库 → ls-remote 获取 HEAD hash
 → 浅克隆 → 判断 bot 是否已处理 → 运行 mul.py → diff → 推送
 """
 
@@ -16,15 +16,15 @@ from datetime import datetime, timezone, timedelta
 # 配置区
 # ============================================================
 REPOS = [
-    "datasets/VoiceOfML/VOMEBOOK",
-    "datasets/VoiceOfML/SovMaterials",
+    "datasets/VoiceOfML/MLMRL-Hub",
+    "datasets/VoiceOfML/IMPMaterial",
     "datasets/VoiceOfML/MLMRL-Library",
     "datasets/VoiceOfML/Teachers",
     "datasets/VoiceOfML/A-Historical-Learning-Data",
     "datasets/VoiceOfML/Japanese-Materials",
     "datasets/VoiceOfML/GPCREducation",
-    "datasets/VoiceOfML/IMPMaterial",
-    "datasets/VoiceOfML/MLMRL-Hub"
+    "datasets/VoiceOfML/SovMaterials",
+    "datasets/VoiceOfML/VOMEBOOK"
 ]
 
 HF_USERNAME = "VoiceOfML"
