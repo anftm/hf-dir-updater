@@ -143,10 +143,10 @@ def process_repo(repo_path):
         date_str = beijing_now_str()
         commit_msg = f"{AUTO_COMMIT_PREFIX} [{date_str}] [auto-bot]"
 
-        run_cmd(["git", "add", "."], cwd=repo_dir)
+        run_cmd(["git", "add", "树形目录.txt", "直接目录.txt"], cwd=repo_dir)
         run_cmd([
             "git", "-c", "user.name=github-actions[bot]",
-            "-c", "user.email=github-actions[bot]@users.noreply.github.com",
+            "-c"， "user.email=github-actions[bot]@users.noreply.github.com",
             "commit", "-m", commit_msg
         ], cwd=repo_dir)
         r = run_cmd(["git", "push"], cwd=repo_dir)
