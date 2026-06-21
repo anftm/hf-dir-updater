@@ -27,9 +27,13 @@ REPOS = [
     "datasets/VoiceOfML/VOMEBOOK"
 ]
 
+# 这些仓库只在首次缺少目录文件时生成一次，后续即使仓库内容变化也不再更新。
+ONE_TIME_REPOS = set()
+
 HF_USERNAME = "VoiceOfML"
 BOT_AUTHOR = "github-actions[bot]"
 AUTO_COMMIT_PREFIX = "自动更新目录"
+DIRECTORY_FILES = ("树形目录.txt", "直接目录.txt")
 # ============================================================
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -64,6 +68,16 @@ def beijing_now_display():
     """返回带时间的北京时间字符串"""
     beijing = timezone(timedelta(hours=8))
     return datetime.now(beijing).strftime("%Y-%m-%d %H:%M:%S")
+
+
+def should_generate_only_once(repo_path):
+    """判断仓库是否启用一次性目录生成模式"""
+    return repo_path in ONE_TIME_REPOS
+
+
+def has_generated_directory_files(repo_dir):
+    """判断目录文件是否已存在"""
+    return all(os.path.exists(os.path.join(repo_dir, name)) for name in DIRECTORY_FILES)
 
 
 def process_repo(repo_path):
@@ -104,6 +118,10 @@ def process_repo(repo_path):
         else:
             author, msg = "", ""
 
+        if should_generate_only_once(repo_path) and has_generated_directory_files(repo_dir):
+            print("  ⏭️  已启用一次性生成，且目录文件已存在，跳过。")
+            return
+
         if author == BOT_AUTHOR and msg.startswith(AUTO_COMMIT_PREFIX):
             print(f'  ⏭️  最新 commit 是本 bot 推送的 ("{msg}")，跳过。')
             return
@@ -143,7 +161,7 @@ def process_repo(repo_path):
         date_str = beijing_now_str()
         commit_msg = f"{AUTO_COMMIT_PREFIX} [{date_str}] [auto-bot]"
 
-        run_cmd(["git", "add", "树形目录.txt", "直接目录.txt"], cwd=repo_dir)
+        run_cmd(["git", "add", *DIRECTORY_FILES], cwd=repo_dir)
         run_cmd([
             "git", "-c", "user.name=github-actions[bot]",
             "-c", "user.email=github-actions[bot]@users.noreply.github.com",
